@@ -66,9 +66,22 @@ export default {
       keyword: ''
     } 
   },
+  mounted() {
+    //通过全局事件总线清除关键字
+    this.$bus.$on("clear", () => {
+      this.keyword = "";
+    });
+  },
   methods: {
     goSearch() {
-      this.$router.push('/search/'+ this.keyword + '?k=' + this.keyword.toUpperCase());
+      if (this.$route.query) {
+        let loction = {
+          name: "search",
+          params: { keyword: this.keyword || undefined },
+        };
+        loction.query = this.$route.query;
+        this.$router.push(loction);
+      }
     }
   }
   };

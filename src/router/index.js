@@ -16,7 +16,7 @@ export default new VueRouter({
             path: '/',
             component: Home
         },
-        {
+        {   name:Home,
             path : '/home',
             component: Home,
             meta: {
@@ -34,6 +34,7 @@ export default new VueRouter({
             path : '/search/:keyword?',
             name:'search',
             component: Search,
+            props: route => ({keyword3: route.params.keyword, keyword4: route.query.keyword2}),
             meta: {
                 isHideFooter: true
             }

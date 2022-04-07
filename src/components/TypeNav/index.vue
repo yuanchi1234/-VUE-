@@ -1,8 +1,58 @@
 <template>
-  <div class="type-nav">
-    <div @mouseleave="leaveShow" @mouseenter="enterShow">
+  <div>
+    <div class="type-nav">
       <div class="container">
-        <h2 class="all">全部商品分类</h2>
+        <div @mouseleave="leaveShow" @mouseenter="enterShow">
+          <h2 class="all">全部商品分类</h2>
+          <transition>
+            <div class="sort" v-if="show">
+              <div class="all-sort-list2" @click="goSearch">
+                <div
+                  class="item"
+                  v-for="(c1, index) in categoryList"
+                  :key="c1.categoryId"
+                >
+                  <h3>
+                    <a
+                      :data-categoryName="c1.categoryName"
+                      :data-category1Id="c1.categoryId"
+                      >{{ c1.categoryName }}</a
+                    >
+                  </h3>
+                  <div class="item-list clearfix">
+                    <div
+                      class="subitem"
+                      v-for="(c2, index) in c1.categoryChild"
+                      :key="c2.categoryId"
+                    >
+                      <dl class="fore">
+                        <dt>
+                          <a
+                            :data-categoryName="c2.categoryName"
+                            :data-category1Id="c2.categoryId"
+                            >{{ c2.categoryName }}</a
+                          >
+                        </dt>
+                        <dd>
+                          <em
+                            v-for="(c3, index) in c2.categoryChild"
+                            :key="c3.categoryId"
+                          >
+                            <a
+                              :data-categoryName="c3.categoryName"
+                              :data-category1Id="c3.categoryId"
+                              >{{ c3.categoryName }}</a
+                            >
+                          </em>
+                        </dd>
+                      </dl>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </transition>
+        </div>
         <nav class="nav">
           <a href="###">服装城</a>
           <a href="###">美妆馆</a>
@@ -13,117 +63,72 @@
           <a href="###">有趣</a>
           <a href="###">秒杀</a>
         </nav>
-        <div class="sort" v-if='show'>
-          <div class="all-sort-list2" @click="goSearch">
-            <div
-              class="item"
-              v-for="(c1, index) in categoryList"
-              :key="c1.categoryId"
-            >
-              <h3>
-                <a
-                  :data-categoryName="c1.categoryName"
-                  :data-category1Id="c1.categoryId"
-                  >{{ c1.categoryName }}</a
-                >
-              </h3>
-              <div class="item-list clearfix">
-                <div
-                  class="subitem"
-                  v-for="(c2, index) in c1.categoryChild"
-                  :key="c2.categoryId"
-                >
-                  <dl class="fore">
-                    <dt>
-                      <a
-                        :data-categoryName="c2.categoryName"
-                        :data-category1Id="c2.categoryId"
-                        >{{ c2.categoryName }}</a
-                      >
-                    </dt>
-                    <dd>
-                      <em
-                        v-for="(c3, index) in c2.categoryChild"
-                        :key="c3.categoryId"
-                      >
-                        <a
-                          :data-categoryName="c3.categoryName"
-                          :data-category1Id="c3.categoryId"
-                          >{{ c3.categoryName }}</a
-                        >
-                      </em>
-                    </dd>
-                  </dl>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
 </template>
-
 <script>
 import { mapState } from "vuex";
 export default {
   name: "TypeNav",
-  data(){
-    return{
-      show:true
-    }
+  data() {
+    return {
+      show: true,
+    };
   },
   mounted() {
-    this.$store.dispatch("categoryList");
-    if (this.$route.path != "/home") {
+    if (this.$route.path != "/home" && this.$route.path != "/") {
       this.show = false;
     }
   },
   computed: {
     ...mapState({
       categoryList: (state) => state.home.categoryList,
-    })
+    }),
   },
   methods: {
-    goSearch(event){
-      let element = event.target
+    goSearch(event) {
+      let element = event.target;
       //html中会把大写转为小写
       //获取目前鼠标点击标签的categoryname,category1id,category2id,category3id，
       // 通过四个属性是否存在来判断是否为a标签，以及属于哪一个等级的a标签
-      let {categoryname,category1id,category2id,category3id} = element.dataset
-
+      let { categoryname, category1id, category2id, category3id } =
+        element.dataset;
 
       //categoryname存在，表示为a标签
-      if(categoryname){
+      if (categoryname) {
         //category1id一级a标签
         //整理路由跳转的参数
-        let location = {name:'search'}//跳转路由name
-        let query = {categoryName:categoryname}//路由参数
+        let location = { name: "search" }; //跳转路由name
+        let query = { categoryName: categoryname }; //路由参数
 
-        if(category1id){
-          query.category1Id = category1id
-        }else if(category2id){
-        //category2id二级a标签
-          query.category2Id = category2id
-        }else if(category3id){
-        //category3id三级a标签
-          query.category3Id = category3id
+        if (category1id) {
+          query.category1Id = category1id;
+        } else if (category2id) {
+          //category2id二级a标签
+          query.category2Id = category2id;
+        } else if (category3id) {
+          //category3id三级a标签
+          query.category3Id = category3id;
         }
         //整理完参数
-        location.query = query
-        //路由跳转
-        this.$router.push(location)
-
+        if (this.$route.params) {
+          location.params = this.$route.params;
+          //动态给location配置对象添加query属性
+          location.query = query;
+          //路由跳转
+          this.$router.push(location);
+        }
       }
     },
     enterShow() {
       this.show = true;
     },
     leaveShow() {
-      if(this.$route.path != '/home') {
+      if (this.$route.path != "/home" && this.$route.path != "/") {
         this.show = false;
       }
-    }
+    },
   },
 };
 </script>
@@ -162,9 +167,9 @@ export default {
     .sort {
       position: absolute;
       left: 0;
-      top: 45px;
+      top: 50px;
       width: 210px;
-      height: 461px;
+      height: 464px;
       position: absolute;
       background: #fafafa;
       z-index: 999;
@@ -172,7 +177,7 @@ export default {
       .all-sort-list2 {
         .item {
           h3 {
-            line-height: 30px;
+            line-height: 26.3px;
             font-size: 14px;
             font-weight: 400;
             overflow: hidden;
@@ -188,7 +193,7 @@ export default {
             display: none;
             position: absolute;
             width: 734px;
-            min-height: 460px;
+            min-height: 464px;
             background: #f7f7f7;
             left: 210px;
             border: 1px solid #ddd;

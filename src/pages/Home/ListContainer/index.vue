@@ -3,20 +3,21 @@
   <div class="list-container">
     <div class="sortList clearfix">
       <div class="center">
-        <!--banner轮播-->
-        <div class="swiper-container" id="mySwiper">
+        <!-- banner轮播-->
+        <!-- <div class="swiper-container" id="mySwiper" ref='cur'> 
           <div class="swiper-wrapper">
-            <div class="swiper-slide">
-              <img src="./images/banner1.jpg" />
+            <div class="swiper-slide" v-for="(carouse,index) in bannerList" :key="carouse.id">
+              <img :src="carouse.imgUrl" />
             </div>
           </div>
           <!-- 如果需要分页器 -->
-          <div class="swiper-pagination"></div>
+          <!-- <div class="swiper-pagination"></div> -->
 
           <!-- 如果需要导航按钮 -->
-          <div class="swiper-button-prev"></div>
+          <!-- <div class="swiper-button-prev"></div>
           <div class="swiper-button-next"></div>
-        </div>
+        </div>  -->
+        <Carsousel :list='bannerList'/>
       </div>
       <div class="right">
         <div class="news">
@@ -92,9 +93,64 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
+// import Swiper from 'swiper';
+import 'swiper/css/swiper.css';
 export default {
   name: "",
-};
+
+  mounted(){
+  // 派发请求，将数据存储在仓库中
+  this.$store.dispatch('getBannerList');
+  
+  // setTimeout(()=>{
+  //     let mySwiper = new Swiper(document.getElementsByClassName("swiper-container"),{
+  //       pagination:{
+  //         el: '.swiper-pagination',
+  //         clickable: true,
+  //       },
+  //       // 如果需要前进后退按钮
+  //       navigation: {
+  //         nextEl: '.swiper-button-next',
+  //         prevEl: '.swiper-button-prev',
+  //       },
+  //       // 如果需要滚动条
+  //       scrollbar: {
+  //         el: '.swiper-scrollbar',
+  //         clickable: true,
+  //       },
+  //     })
+  //   },2000)
+  },
+  computed: {
+    ...mapState({
+      bannerList: (state) => state.home.bannerList,
+      
+    })
+  },
+// watch:{
+//     bannerList(newValue,oldValue){
+//         //this.$nextTick()使用
+//         this.$nextTick(()=>{
+//           let mySwiper = new Swiper(document.getElementsByClassName("swiper-container"),{
+//             pagination:{
+//               el: '.swiper-pagination',
+//               clickable: true,
+//             },
+//             // 如果需要前进后退按钮
+//             navigation: {
+//               nextEl: '.swiper-button-next',
+//               prevEl: '.swiper-button-prev',
+//             },
+//             // 如果需要滚动条
+//             scrollbar: {
+//               el: '.swiper-scrollbar',
+//             },
+//           })
+//         })
+//     }
+//   }
+}
 </script>
 
 <style scoped lang="less">
